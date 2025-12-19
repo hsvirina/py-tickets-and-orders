@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -60,7 +61,7 @@ class MovieSession(models.Model):
 
 
 class Order(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(
         to=get_user_model(),
         on_delete=models.CASCADE,
@@ -71,7 +72,7 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        return str(self.created_at)
+        return self.created_at.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class Ticket(models.Model):
@@ -97,11 +98,9 @@ class Ticket(models.Model):
         ]
 
     def __str__(self) -> str:
-        return (
-            f"{self.movie_session.movie.title} "
-            f"{self.movie_session.show_time} "
-            f"(row: {self.row}, seat: {self.seat})"
-        )
+        show_time = self.movie_session.show_time.strftime("%Y-%m-%d %H:%M:%S")
+        return (f"{self.movie_session.movie.title} {show_time} "
+                f"(row: {self.row}, seat: {self.seat})")
 
     def clean(self) -> None:
         cinema_hall = self.movie_session.cinema_hall

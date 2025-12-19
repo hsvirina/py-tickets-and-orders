@@ -34,7 +34,7 @@ def update_user(
     first_name: Optional[str] = None,
     last_name: Optional[str] = None,
 ) -> UserModel:
-    user = UserModel.objects.get(pk=user_id)
+    user = get_user(user_id)
 
     if username is not None:
         user.username = username
